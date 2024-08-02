@@ -1,0 +1,63 @@
+import numpy as np
+from pyTsetlinMachine.tm import MultiClassTsetlinMachine
+import matplotlib.pyplot as plt
+from time import time
+from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+import time 
+data1 = np.loadtxt('/root/autodl-tmp/CAN/CAN_35/converted_final_DoS_dataset.txt',dtype=int)
+data2 = np.loadtxt('/root/autodl-tmp/CAN/CAN_35/converted_final_Fuzzy_dataset.txt',dtype=int)
+data3 = np.loadtxt('/root/autodl-tmp/CAN/CAN_35/converted_final_gear_dataset.txt',dtype=int)
+data4 = np.loadtxt('/root/autodl-tmp/CAN/CAN_35/converted_final_RPM_dataset.txt',dtype=int)
+data = np.concatenate((data1, data2, data3, data4), axis=0)
+np.random.seed(42)  # 设置随机种子以确保结果可重复
+data = np.random.permutation(data)
+train_size = int(len(data) * 0.8)
+print(data.shape)
+X = data[:train_size,:]
+Y = data[train_size:,:]
+X_train = X[:, :-1]
+Y_train = X[:, -1]
+
+X_test = Y[:, :-1]
+Y_test = Y[:, -1]
+
+print(X_train.shape)
+print(X_test.shape)
+
+
+tm = MultiClassTsetlinMachine(200, 15, 2.5)
+
+accuracy_list = []  # 保存每个epoch的准确率
+
+print("\nAccuracy over 150 epochs:\n")
+
+for i in range(1):
+    start_training = time()
+    tm.fit(X_train, Y_train, epochs=1, incremental=True)
+    stop_training = time()
+
+    start_testing = time()
+    result = 100 * (tm.predict(X_test) == Y_test).mean()
+    stop_testing = time()
+    accuracy_list.append(result)
+
+        # print("#%d Accuracy: %.2f%% Training: %.2fs Testing: %.2fs" % (i + 1, result, stop_training - start_training,
+        #                                                           stop_testing - start_testing))
+
+# 保存结果为文本文件
+
+    print("#%d Accuracy: %.2f%% Training: %.2fs Testing: %.2fs" % (i + 1, result, stop_training - start_training,
+                                                              stop_testing - start_testing))
+# 绘制图表
+
+
+
+
+
+time1 = time.time()
+# for i in range(X_test.shape[0]):
+#     # c_X_test = X_test[i]
+outputs = tm.predict(X_test)
+
+time2 = time.time()
